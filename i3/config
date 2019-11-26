@@ -65,8 +65,8 @@ bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT
 bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -5% && $refresh_i3status
 bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
 bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
-bindsym XF86MonBrightnessUp exec xbacklight +5
-bindsym XF86MonBrightnessDown exec xbacklight -5
+bindsym XF86MonBrightnessUp exec xbacklight +10
+bindsym XF86MonBrightnessDown exec xbacklight -10
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
@@ -242,9 +242,10 @@ mode "$mode_system" {
     bindsym Return mode "default"
     bindsym Escape mode "default"
 }
+bindsym $mod+Delete mode "$mode_system"
 
+# music (CMus)
 set $mode_music Music (b) Next, (c) Play/Pause, (z) Prev, (r) Repeat, (+) Volume Up, (-) Volume Down
-
 mode "$mode_music" {
 	bindsym b exec --no-startup-id cmus-remote --next
 	bindsym c exec --no-startup-id cmus-remote --pause, mode "default"
@@ -257,15 +258,29 @@ mode "$mode_music" {
     bindsym Return mode "default"
     bindsym Escape mode "default"
 }
+bindsym $mod+m mode "$mode_music"
+bindsym $mod+Shift+m exec konsole -e cmus
 
-bindsym $mod+Delete mode "$mode_system"
+# Brightness
+set $mode_brightness Brightness (+) +5, (-) -5, (f) Full, (z) Off, (d) Dim, (m) medium
+mode "$mode_brightness" {
+	bindsym plus exec xbacklight +5
+	bindsym minus exec xbacklight -5
+	bindsym f exec xbacklight =100, mode "default"
+	bindsym z exec xbacklight =0, mode "default"
+	bindsym d exec xbacklight =1, mode "default"
+	bindsym m exec xbacklight =50, mode "default"
+
+    # back to normal: Enter or Escape
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+bindsym $mod+b mode "$mode_brightness"
+
 
 # Ranger
 bindsym $mod+f exec konsole -e ranger
 
-# CMus (music)
-bindsym $mod+m mode "$mode_music"
-bindsym $mod+Shift+m exec konsole -e cmus
 
 bindsym $mod+Shift+w exec feh --bg-scale --randomize ~/.wallpaper/welp/*
 # Normal
