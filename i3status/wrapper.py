@@ -27,6 +27,8 @@
 import sys
 import json
 import subprocess
+from pycmus import remote
+import pathlib
 
 
 def get_gpu():
@@ -58,6 +60,34 @@ def read_line():
         sys.exit()
 
 
+def convert_seconds_to_sane_time(seconds: int):
+    time = seconds
+    hours = int(time / 3600)
+    time -= hours * 3600
+    minutes = int(time / 60)
+    time -= minutes * 60
+    seconds = time
+    if hours > 0:
+        return '{:02d}:{:02d}:{:02d}'.format(hours, minutes, seconds)
+    else:
+        return '{:02d}:{:02d}'.format(minutes, seconds)
+
+
+def get_cmus_status():
+    try:
+        cmus = remote.PyCmus()
+        dict = cmus.get_status_dict()
+        status = dict['status']
+        if status == 'playing' or status == 'paused':
+            return '{} ({} {} / {})'.format(pathlib.Path(dict['file']).stem, status,
+                                            convert_seconds_to_sane_time(int(dict['position'])),
+                                            convert_seconds_to_sane_time(int(dict['duration'])))
+        else:
+            return status
+    except FileNotFoundError:
+        return 'not running'
+
+
 if __name__ == '__main__':
     # Skip the first line which contains the version header.
     print_line(read_line())
@@ -75,8 +105,10 @@ if __name__ == '__main__':
             line, prefix = line[1:], ','
 
         j = json.loads(line)
+        music = get_cmus_status()
         # insert information into the start of the json, but could be anywhere
         # CHANGE THIS LINE TO INSERT SOMETHING ELSE
         j.insert(0, {'full_text': 'GPU: %s' % gpu, 'name': 'GPU'})
+        j.insert(0, {'full_text': 'Music: %s' % music, 'name': 'music'})
         # and echo back new encoded json
         print_line(prefix + json.dumps(j))
