@@ -13,7 +13,7 @@ FLIST=$( find "$FOLDER" -type f )
 
 if echo "$FLIST" | grep -i ".jpeg\|.png\|.jpg" &>/dev/null; then
 	ART=$( echo "$FLIST" | grep -i "Wallpaper.png\|Wallpaper.jpg\|cover.jpg\|cover.png\|front.jpg\|front.png\
-	\|folder.jpg\|folder.png" | head -n1 )
+	\|folder.jpg\|folder.png\|downloaded_cover.jpg\|downloaded_cover.png" | head -n1 )
 	
 	# If null string try for any png
 	if [[ -z "$ART" ]]; then
