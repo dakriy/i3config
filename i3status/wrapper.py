@@ -29,6 +29,7 @@ import json
 import subprocess
 from pycmus import remote
 import pathlib
+import time
 
 
 def get_gpu():
@@ -98,6 +99,9 @@ if __name__ == '__main__':
     # Only need to get GPU once as the whole x server has to restart when changing the GPU
     gpu = get_gpu()
 
+    music = get_cmus_status()
+    last = time.time()
+
     while True:
         line, prefix = read_line(), ''
         # ignore comma at start of lines
@@ -105,7 +109,15 @@ if __name__ == '__main__':
             line, prefix = line[1:], ','
 
         j = json.loads(line)
-        music = get_cmus_status()
+
+        # only update music at most every 4 seconds as it takes
+        # a while and can crash if hit to quickly, also it lags
+        # behind
+        current = time.time()
+        if current - last > 4:
+            music = get_cmus_status()
+            last = current
+
         # insert information into the start of the json, but could be anywhere
         # CHANGE THIS LINE TO INSERT SOMETHING ELSE
         j.insert(0, {'full_text': 'GPU: %s' % gpu, 'name': 'GPU'})
