@@ -87,6 +87,8 @@ def get_cmus_status():
             return status
     except FileNotFoundError:
         return 'not running'
+    except ConnectionRefusedError:
+        return 'not running'
 
 
 if __name__ == '__main__':
@@ -97,7 +99,11 @@ if __name__ == '__main__':
     print_line(read_line())
 
     # Only need to get GPU once as the whole x server has to restart when changing the GPU
-    gpu = get_gpu()
+    gpu = 'Error'
+    try:
+        gpu = get_gpu()
+    except:
+        pass
 
     music = get_cmus_status()
     last = time.time()

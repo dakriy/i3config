@@ -5,15 +5,18 @@
 ## compatible with different setups as it is simpler. No weird hacks.
 
 ## Requires feh (light no-gui image viewer).
+# Uncomment the next line to disable..........
+# exit
 
 FOLDER=$( cmus-remote -Q | grep "file" | sed "s/file //" | rev | \
 cut -d"/" -f2- | rev )
 
-FLIST=$( find "$FOLDER" -type f )
+FLIST=$( find "$FOLDER" -maxdepth 1 -type f )
 
 if echo "$FLIST" | grep -i ".jpeg\|.png\|.jpg" &>/dev/null; then
 	ART=$( echo "$FLIST" | grep -i "Wallpaper.png\|Wallpaper.jpg\|cover.jpg\|cover.png\|front.jpg\|front.png\
 	\|folder.jpg\|folder.png\|downloaded_cover.jpg\|downloaded_cover.png" | head -n1 )
+	echo $FLIST
 	
 	# If null string try for any png
 	if [[ -z "$ART" ]]; then
@@ -23,7 +26,7 @@ if echo "$FLIST" | grep -i ".jpeg\|.png\|.jpg" &>/dev/null; then
 	if [[ -z "$ART" ]]; then
 		ART=$( /home/yid/programming/downloader/thumb.py )
 	fi
-	
+
 	PROC=$( ps -eF | grep "feh" | grep -v "cmus\|grep" | cut -d"/"  -f2- )
 	
 	if [[ "/$PROC" == "$ART" ]]; then
