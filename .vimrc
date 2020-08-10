@@ -1,5 +1,4 @@
-set runtimepath^=~/.vim/bundle/ctrlp.vim
-
+color murphy
 syntax enable
 set tabstop=4
 set softtabstop=4
@@ -45,21 +44,36 @@ set encoding=utf-8
 " The encoding written
 set fileencoding=utf-8
 
-" vim latex suite
-"""""""""""""""""""""""""""""""""""""""""""""""""
-" REQUIRED. This makes vim invoke Latex-Suite when you open a tex file.
 filetype plugin on
 
-" IMPORTANT: grep will sometimes skip displaying the file name if you
-" search in a singe file. This will confuse Latex-Suite. Set your grep
-" program to always generate a file-name.
 set grepprg=grep\ -nH\ $*
 
-" OPTIONAL: This enables automatic indentation as you type.
+" This enables automatic indentation as you type.
 filetype indent on
 
-" OPTIONAL: Starting with Vim 7, the filetype of empty .tex files defaults to
-" 'plaintex' instead of 'tex', which results in vim-latex not being loaded.
-" The following changes the default filetype back to 'tex':
-let g:tex_flavor='latex'
-"""""""""""""""""""""""""""""""""""""""""""""""""
+" Clipboard stuff
+set clipboard=unnamedplus
+
+vmap <C-c> "+yi
+vmap <C-x> "+c
+vmap <C-v> c<ESC>"+p
+imap <C-v> <C-r><C-o>+
+
+" Preserve clipboard on leave
+if executable("xsel")
+
+  function! PreserveClipboard()
+    call system("xsel -ib", getreg('+'))
+  endfunction
+
+  function! PreserveClipboadAndSuspend()
+    call PreserveClipboard()
+    suspend
+  endfunction
+
+  autocmd VimLeave * call PreserveClipboard()
+  nnoremap <silent> <c-z> :call PreserveClipboadAndSuspend()<cr>
+  vnoremap <silent> <c-z> :<c-u>call PreserveClipboadAndSuspend()<cr>
+
+endif
+
